@@ -1,6 +1,8 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FiPlus,
   FiEdit,
@@ -9,52 +11,97 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 
-const initialDepartments = [
-  { id: 1, name: "Computer Science", college: "Engineering" },
-  { id: 2, name: "Information Systems", college: "IT College" },
-];
+const API_BASE = "http://127.0.0.1:8000/api/librarayStaff/departments";
+localStorage.setItem("token", "5|BMCMQaIS8x2czusDVLuQoVQZIOp4FHq8PORLamKB1322b594"); // Set your token here
 
 export default function DepartmentManagementPage() {
-  const [departments, setDepartments] = useState(initialDepartments);
-  const [form, setForm] = useState({ name: "", college: "" });
+  const [departments, setDepartments] = useState([]);
+  const [form, setForm] = useState({ name: "" });
   const [mode, setMode] = useState(null); // 'add' | 'edit'
   const [editId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await axios.get(API_BASE, {
+        headers: getAuthHeaders(),
+      });
+
+      const departmentsList = res.data.data?.[0]?.college?.department || [];
+      setDepartments(departmentsList);
+    } catch (err) {
+      console.error("Failed to load departments:", err);
+    }
+  };
+
   const openModal = (type, dept = null) => {
     setMode(type);
     if (type === "edit" && dept) {
-      setForm({ name: dept.name, college: dept.college });
+      setForm({ name: dept.name });
       setEditId(dept.id);
     } else {
-      setForm({ name: "", college: "" });
+      setForm({ name: "" });
       setEditId(null);
     }
     setShowModal(true);
   };
 
-  const handleSave = () => {
-    if (!form.name || !form.college) return;
-    if (mode === "add") {
-      setDepartments((prev) => [
-        ...prev,
-        { id: Date.now(), name: form.name, college: form.college },
-      ]);
-    } else if (mode === "edit") {
-      setDepartments((prev) =>
-        prev.map((d) => (d.id === editId ? { ...d, ...form } : d))
-      );
+  const handleSave = async () => {
+    if (!form.name) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+
+      if (mode === "add") {
+        await axios.post(API_BASE, formData, {
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else if (mode === "edit") {
+        formData.append("_method", "PUT");
+        await axios.post(`${API_BASE}/${editId}`, formData, {
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
+      await fetchDepartments();
+      setForm({ name: "" });
+      setShowModal(false);
+    } catch (err) {
+      console.error("Save error:", err);
     }
-    setForm({ name: "", college: "" });
-    setShowModal(false);
   };
 
-  const handleDelete = (id) => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this department?"
-    );
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this department?");
     if (!confirm) return;
-    setDepartments((prev) => prev.filter((d) => d.id !== id));
+
+    try {
+      await axios.delete(`${API_BASE}/${id}`, {
+        headers: getAuthHeaders(),
+      });
+
+      setDepartments((prev) => prev.filter((d) => d.id !== id));
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
   };
 
   return (
@@ -76,18 +123,13 @@ export default function DepartmentManagementPage() {
           <thead className="bg-gray-100">
             <tr>
               <th className="text-left px-4 py-2">Department Name</th>
-              <th className="text-left px-4 py-2">College</th>
               <th className="text-center px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {departments.map((dept) => (
-              <tr
-                key={dept.id}
-                className="border-t hover:bg-gray-50 transition"
-              >
+              <tr key={dept.id} className="border-t hover:bg-gray-50 transition">
                 <td className="px-4 py-2">{dept.name}</td>
-                <td className="px-4 py-2">{dept.college}</td>
                 <td className="px-4 py-2 text-center space-x-3">
                   <button
                     onClick={() => openModal("edit", dept)}
@@ -107,9 +149,7 @@ export default function DepartmentManagementPage() {
           </tbody>
         </table>
         {departments.length === 0 && (
-          <p className="text-center text-gray-500 py-4">
-            No departments found.
-          </p>
+          <p className="text-center text-gray-500 py-4">No departments found.</p>
         )}
       </div>
 
@@ -125,13 +165,6 @@ export default function DepartmentManagementPage() {
               placeholder="Department Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full mb-3 border p-2 rounded"
-            />
-            <input
-              type="text"
-              placeholder="College Name"
-              value={form.college}
-              onChange={(e) => setForm({ ...form, college: e.target.value })}
               className="w-full mb-4 border p-2 rounded"
             />
             <div className="flex justify-end gap-3">
