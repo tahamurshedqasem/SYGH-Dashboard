@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 
 const API_BASE = "http://127.0.0.1:8000/api/librarayStaff/departments";
-localStorage.setItem("token", "5|BMCMQaIS8x2czusDVLuQoVQZIOp4FHq8PORLamKB1322b594"); // Set your token here
+localStorage.setItem("token", "3|OVPMmiaiBnJzMHhipQBgeC6i8DSuiyxb6Dl47PFnf738c628"); // Set your token here
 
 export default function DepartmentManagementPage() {
   const [departments, setDepartments] = useState([]);
