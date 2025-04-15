@@ -271,7 +271,7 @@ import axios from 'axios';
 import { FiEdit, FiTrash2, FiPlus } from 'react-icons/fi';
 
 const API = 'http://127.0.0.1:8000/api/librarayStaff/projects';
-localStorage.setItem('token', '3|OVPMmiaiBnJzMHhipQBgeC6i8DSuiyxb6Dl47PFnf738c628');
+// localStorage.setItem('token', '3|OVPMmiaiBnJzMHhipQBgeC6i8DSuiyxb6Dl47PFnf738c628');
 
 function ProjectsManagementPage() {
   const [projects, setProjects] = useState([]);
@@ -286,7 +286,7 @@ function ProjectsManagementPage() {
   });
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('tempToken');
     return { Authorization: `Bearer ${token}` };
   };
 
