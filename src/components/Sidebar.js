@@ -12,6 +12,9 @@ import {
   FiClipboard,
   FiUser,
   FiLayers,
+  FiMail,
+  FiKey,
+  FiInfo
 } from "react-icons/fi";
 
 const adminLinks = [
@@ -37,9 +40,11 @@ const superAdminLinks = [
 const libraryStaffLinks = [
   { name: "Dashboard", path: "/library", icon: <FiHome /> },
   { name: "Students", path: "/library/students", icon: <FiUser /> },
+  { name: "Student Emails", path: "/library/student-info", icon: <FiInfo /> },
   { name: "Departments", path: "/library/departments", icon: <FiLayers /> },
   { name: "Projects", path: "/library/projects", icon: <FiClipboard /> },
   { name: "Supervisors", path: "/library/supervisors", icon: <FiUserCheck /> },
+  { name: "Supervisor Emails", path: "/library/supervisor-info", icon: <FiKey /> },
   { name: "Approvals", path: "/library/approvals", icon: <FiCheckCircle /> },
 ];
 

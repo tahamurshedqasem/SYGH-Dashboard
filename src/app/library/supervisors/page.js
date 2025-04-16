@@ -176,7 +176,7 @@ export default function SupervisorManagementPage() {
   });
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("tempToken");
     return {
       Authorization: `Bearer ${token}`,
     };
@@ -403,7 +403,7 @@ export default function SupervisorManagementPage() {
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Email</th>
                 <th className="px-4 py-2 text-left">Password</th>
-                <th className="px-4 py-2 text-left">Department</th>
+                <th className="px-4 py-2 text-left">College</th>
                 <th className="px-4 py-2 text-left">Qualification</th>
                 <th className="px-4 py-2 text-center">Actions</th>
               </tr>
